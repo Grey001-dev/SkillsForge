@@ -1,11 +1,6 @@
 # Submission
 
-- [Question 1: Two Sum (C#)](Section1/README.md)
-- [Question 2: Expense Tracker API](expense-tracker-api/README.md)
-- [Postman collection](docs/postmanDocs.json)
-
-
-# Section 1: Two Sum
+## Section 1: Two Sum
 
 ## Run
 cd Section1/Section1

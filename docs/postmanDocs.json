@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Expense Tracker API",
+    "description": "Log expenses, group them into categories and track your spending.\n\nStart with Register, then Login. The token is saved automatically and used by every other request. Create a category before adding expenses.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "description": "Create an account.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"grey\",\n  \"email\": \"grey@test.com\",\n  \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.set(\"token\", pm.response.json().token)"]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "description": "Log in. The token is saved for the other requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"grey@test.com\",\n  \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Create category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "Add a category like Food or Transport.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Food\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/category", "host": ["{{baseUrl}}"], "path": ["category"] }
+          }
+        },
+        {
+          "name": "Get categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "List your categories and their ids.",
+            "url": { "raw": "{{baseUrl}}/category", "host": ["{{baseUrl}}"], "path": ["category"] }
+          }
+        },
+        {
+          "name": "Update category",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "description": "Rename a category. Put its id in the URL.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Groceries\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/category/1", "host": ["{{baseUrl}}"], "path": ["category", "1"] }
+          }
+        },
+        {
+          "name": "Delete category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "Delete a category. It can't have any expenses in it.",
+            "url": { "raw": "{{baseUrl}}/category/1", "host": ["{{baseUrl}}"], "path": ["category", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Create expense",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "Add an expense. `category` is the id of one of your categories.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Lunch\",\n  \"amount\": 2500,\n  \"category\": 1,\n  \"date\": \"2026-10-30\",\n  \"paymentMethod\": \"cash\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/expenses", "host": ["{{baseUrl}}"], "path": ["expenses"] }
+          }
+        },
+        {
+          "name": "Get expenses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "List your expenses. Tick any of the params to filter, sort or change the page.",
+            "url": {
+              "raw": "{{baseUrl}}/expenses?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["expenses"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "categoryId", "value": "1", "disabled": true },
+                { "key": "paymentMethod", "value": "cash", "disabled": true },
+                { "key": "from", "value": "2026-10-01", "disabled": true },
+                { "key": "to", "value": "2026-10-31", "disabled": true },
+                { "key": "sortBy", "value": "amount", "description": "date or amount", "disabled": true },
+                { "key": "order", "value": "desc", "description": "asc or desc", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get expense",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Get one expense. Put its id in the URL.",
+            "url": { "raw": "{{baseUrl}}/expenses/1", "host": ["{{baseUrl}}"], "path": ["expenses", "1"] }
+          }
+        },
+        {
+          "name": "Update expense",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "description": "Edit an expense. Only send what you want to change.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 3000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/expenses/1", "host": ["{{baseUrl}}"], "path": ["expenses", "1"] }
+          }
+        },
+        {
+          "name": "Delete expense",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "Delete an expense.",
+            "url": { "raw": "{{baseUrl}}/expenses/1", "host": ["{{baseUrl}}"], "path": ["expenses", "1"] }
+          }
+        },
+        {
+          "name": "Export report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Download a JSON report with your total, spending per category and all expenses. Takes the same filters as the list.",
+            "url": {
+              "raw": "{{baseUrl}}/expenses/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["expenses", "export"],
+              "query": [
+                { "key": "categoryId", "value": "1", "disabled": true },
+                { "key": "paymentMethod", "value": "cash", "disabled": true },
+                { "key": "from", "value": "2026-10-01", "disabled": true },
+                { "key": "to", "value": "2026-10-31", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summary and Budget",
+      "item": [
+        {
+          "name": "Get summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "See your total spending and spending per category. Add from and to for a date range.",
+            "url": {
+              "raw": "{{baseUrl}}/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["summary"],
+              "query": [
+                { "key": "from", "value": "2026-10-01", "disabled": true },
+                { "key": "to", "value": "2026-10-31", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Set budget",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "description": "Set your monthly budget.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monthlyBudget\": 50000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/budget", "host": ["{{baseUrl}}"], "path": ["budget"] }
+          }
+        },
+        {
+          "name": "Get budget status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Check this month's spending against your budget. `exceeded` is true if you're over.",
+            "url": { "raw": "{{baseUrl}}/budget", "host": ["{{baseUrl}}"], "path": ["budget"] }
+          }
+        }
+      ]
+    }
+  ]
+}

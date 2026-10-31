@@ -1,0 +1,11 @@
+node_modules/
+.env
+generated/
+.agents/
+.claude/
+.devin/
+bin/
+obj/
+.vs/
+.idea/
+*.user
